@@ -3,9 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
   <script src="main.js" defer></script>
   <title>Music Search</title>
 </head>
 <body>
+  <header>Really Awesome Music Site</header>
+
+    <figure>
+        <figcaption id = "figCaption"></figcaption>
+        <audio id = "musicPlayer" controls = true preload="auto" src=""></audio>
+      </figure>
+
+    <form id="searchZone">
+      <label>Search: <input id="searchTerm" type="text" /></label>
+      <br /><br />
+      <button type="submit">Submit</button>
+    </form>
+    <p id="log"></p>
+
+
+  <div id="resultsBox">
+  
+  </div>
 </body>
 </html>

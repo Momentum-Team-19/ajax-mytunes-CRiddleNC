@@ -17,7 +17,6 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   console.log(searchTerm.value);
 
-  //checking to see if searchTerm is empty, if so log "please enter a search term"
   if (searchTerm === "") {
     console.log("Please Enter A Search Term");
     return;
@@ -55,26 +54,25 @@ form.addEventListener("submit", (event) => {
         //i think this is broken by the search being static
         let picDiv = document.createElement("img");
         picDiv.src = song.artworkUrl100;
-        //adding class i defined in css to round the image borders
-        picDiv.classList.add("imgRounder");
         songBox.appendChild(picDiv);
 
         //code to display the song name
         let songDiv = document.createElement("p");
         songDiv.innerText = song.trackName;
+        songDiv.id = "songDiv";
         songBox.appendChild(songDiv);
 
         //code to display the band name
-        let bandDiv = document.createElement("p");
-        bandDiv.innerText = song.artistName;
-        songBox.appendChild(bandDiv);
+        //        let bandDiv = document.createElement('p')
+        //        bandDiv.innerText = NEEDS TO BE CHANGED -> song.trackName
+        //        songBox.appendChild(bandDiv)
 
         //added listener for song box to snag the track name to use in
         // the audio preview
         songBox.addEventListener("click", (event) => {
           console.log(song.trackName);
           musicPlayer.src = song.previewUrl;
-          figCaption.innerText = `   Now Playing: ${song.artistName} - ${song.trackName}`;
+          figCaption.innerText = `Now Playing: ${song.artistName} - ${song.trackName}`;
         });
       }
     });
