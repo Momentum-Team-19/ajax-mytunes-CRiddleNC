@@ -5,77 +5,87 @@ let resultsBox = document.querySelector("#resultsBox");
 const form = document.getElementById("searchZone");
 const searchTerm = document.getElementById("searchTerm");
 const musicPlayer = document.getElementById("musicPlayer");
+musicPlayer.volume = 0.2;
 const figCaption = document.getElementById("figCaption");
 
 //setting up a shortcut for the search bar  url becomes the first part of the fetch so
 // the search terms can be added later
 let url = "https://proxy-itunes-api.glitch.me/search?term=";
 
-//getting the information
-
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  console.log(searchTerm.value);
-
-  //checking to see if searchTerm is empty, if so log "please enter a search term"
-  if (searchTerm === "") {
-    console.log("Please Enter A Search Term");
-    return;
+//if there is a first child it will trigger this while statement
+function clear(container) {
+  while (container.firstChild) {
+    //remove the contents of container if there is a child inside
+    container.removeChild(container.firstChild);
   }
+}
 
-  //if there is a first child it will trigger this while statement
-  while (resultsBox.firstChild) {
-    //remove the contents of resultsBox if there is a child inside
-    resultsBox.removeChild(resultsBox.firstChild);
-  }
+function search() {
+  //getting the information
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    console.log(searchTerm.value);
 
-  fetch(url + searchTerm.value, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  })
-    //asking for the infomation in json format -- return the promise this way
-    .then((response) => {
-      return response.json();
+    //checking to see if searchTerm is empty, if so log "please enter a search term"
+    if (searchTerm === "") {
+      console.log("Please Enter A Search Term");
+      return;
+    }
+
+    clear(resultsBox);
+
+    fetch(url + searchTerm.value, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
     })
+      //asking for the infomation in json format -- return the promise this way
+      .then((response) => {
+        return response.json();
+      })
+      //when promise comes back log data.results (results because thats what the api is calling it)
+      // fills song with what we want to display
+      .then((data) => {
+        console.log(data);
+        for (let song of data.results) {
+          console.log(`song name ${song.trackName}`);
 
-    //when promise comes back log data.results (results because thats what the api is calling it)
-    // fills song with what we want to display
+          let songBox = document.createElement("div");
+          //where im adding class
+          songBox.classList.add("songBox");
+          resultsBox.appendChild(songBox);
 
-    .then((data) => {
-      console.log(data);
-      for (let song of data.results) {
-        console.log(`song name ${song.trackName}`);
+          //code to display the image for each song returned
+          let picDiv = document.createElement("img");
+          picDiv.src = song.artworkUrl100;
+          //adding class i defined in css to round the image borders
+          picDiv.classList.add("imgRounder");
+          songBox.appendChild(picDiv);
 
-        let songBox = document.createElement("div");
-        //where im adding class
-        songBox.classList.add("songBox");
-        resultsBox.appendChild(songBox);
+          //code to display the song name
+          let songDiv = document.createElement("p");
+          let strongElement = document.createElement("strong");
+          strongElement.innerText = song.trackName;
+          songBox.appendChild(strongElement);
+          songBox.appendChild(songDiv);
 
-        //code to display the image for each song returned
-        //i think this is broken by the search being static
-        let picDiv = document.createElement("img");
-        picDiv.src = song.artworkUrl100;
-        //adding class i defined in css to round the image borders
-        picDiv.classList.add("imgRounder");
-        songBox.appendChild(picDiv);
+          //code to display the band name
+          let bandDiv = document.createElement("p");
+          bandDiv.innerText = song.artistName;
+          songBox.appendChild(bandDiv);
 
-        //code to display the song name
-        let songDiv = document.createElement("p");
-        songDiv.innerText = song.trackName;
-        songBox.appendChild(songDiv);
+          const playSong = () => {
+            //added listener for song box to snag the track name to use in
+            // the audio preview
+            songBox.addEventListener("click", (event) => {
+              console.log(song.trackName);
+              musicPlayer.src = song.previewUrl;
+              figCaption.innerText = `   Now Playing: ${song.artistName} - ${song.trackName}`;
+            });
+          };
+          playSong();
+        }
+      });
+  });
+}
 
-        //code to display the band name
-        let bandDiv = document.createElement("p");
-        bandDiv.innerText = song.artistName;
-        songBox.appendChild(bandDiv);
-
-        //added listener for song box to snag the track name to use in
-        // the audio preview
-        songBox.addEventListener("click", (event) => {
-          console.log(song.trackName);
-          musicPlayer.src = song.previewUrl;
-          figCaption.innerText = `   Now Playing: ${song.artistName} - ${song.trackName}`;
-        });
-      }
-    });
-});
+search();
